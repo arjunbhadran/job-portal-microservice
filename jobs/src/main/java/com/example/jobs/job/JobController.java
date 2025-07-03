@@ -1,7 +1,8 @@
 package com.example.jobs.job;
 
-import com.example.jobs.job.dto.JobWithCompanyDTO;
+import com.example.jobs.job.dto.JobWithCompanyAndReviewDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,13 +15,18 @@ public class JobController {
     private JobService jobService;
 
     @GetMapping("/api/public/jobs")
-    public ResponseEntity<List<JobWithCompanyDTO>> findAll(){
+    public ResponseEntity<List<JobWithCompanyAndReviewDTO>> findAll(){
         return ResponseEntity.ok(jobService.getAlljobs());
     }
 
     @GetMapping("api/public/jobs/{id}")
-    public ResponseEntity<Job> findById(@PathVariable Long id){
-        return ResponseEntity.ok(jobService.getJobById(id));
+    public ResponseEntity<JobWithCompanyAndReviewDTO> findById(@PathVariable Long id){
+        //return ResponseEntity.ok(jobService.getJobById(id));
+        JobWithCompanyAndReviewDTO jobWithCompanyDTO = jobService.getJobById(id);
+        if(jobWithCompanyDTO!=null){
+            return new ResponseEntity<>(jobWithCompanyDTO,HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/api/admin/jobs")
