@@ -37,7 +37,7 @@ job-portal-microservice/
 | Service      | Description                                                  | Default Port (suggested) |
 |--------------|-------------------------------------------------------------|--------------------------|
 | serv-reg     | Eureka Server for service discovery                         | 8761                     |
-| configserver | Centralized config server for all microservices             | 8888                     |
+| configserver | Centralized config server for all microservices             | 8080                     |
 | company      | Manages company-related data and operations                 | 8081                     |
 | jobs         | Handles job postings and related business logic             | 8082                     |
 | review       | Manages company/job reviews and ratings                     | 8083                     |
