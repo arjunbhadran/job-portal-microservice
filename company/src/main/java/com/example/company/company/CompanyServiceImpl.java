@@ -4,9 +4,14 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,6 +29,7 @@ public class CompanyServiceImpl implements CompanyService {
     Logger logger = LoggerFactory.getLogger(CompanyServiceImpl.class);
     @Autowired
     CompanyRepository companyRepository;
+
 
     @Override
     public List<Company> getAllCompanies(){
@@ -90,4 +96,5 @@ public class CompanyServiceImpl implements CompanyService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
+
 }

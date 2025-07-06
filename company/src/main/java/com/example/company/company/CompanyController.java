@@ -12,17 +12,17 @@ public class CompanyController {
     @Autowired
     private CompanyService companyService;
 
-    @GetMapping("api/public/companies")
+    @GetMapping("/companies")
     public ResponseEntity<List<Company>> getAllCompanies(){
         return ResponseEntity.ok(companyService.getAllCompanies());
     }
 
-    @PostMapping("api/public/companies")
+    @PostMapping("/companies")
     public void addCompany(@RequestBody Company company){
         companyService.createCompany(company);
     }
 
-    @GetMapping("api/public/companies/{id}")
+    @GetMapping("/companies/{id}")
     public ResponseEntity<Company> getCompanyById(@PathVariable Long id){
         try{
             return ResponseEntity.ok(companyService.getCompanyById(id));
@@ -31,12 +31,12 @@ public class CompanyController {
         }
     }
 
-    @DeleteMapping("api/public/companies/{id}")
+    @DeleteMapping("/companies/{id}")
     public ResponseEntity<String> deleteCompany(@PathVariable Long id){
         return ResponseEntity.ok(companyService.deleteCompany(id));
     }
 
-    @PutMapping("api/public/companies/{id}")
+    @PutMapping("/companies/{id}")
     public ResponseEntity<Company> updateCompany(@PathVariable Long id, @RequestBody Company company){
         return ResponseEntity.ok(companyService.updateCompany(company,id));
     }

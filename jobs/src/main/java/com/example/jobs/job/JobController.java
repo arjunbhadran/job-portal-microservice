@@ -14,12 +14,12 @@ public class JobController {
     @Autowired
     private JobService jobService;
 
-    @GetMapping("/api/public/jobs")
+    @GetMapping("/jobs")
     public ResponseEntity<List<JobWithCompanyAndReviewDTO>> findAll(){
         return ResponseEntity.ok(jobService.getAlljobs());
     }
 
-    @GetMapping("api/public/jobs/{id}")
+    @GetMapping("/jobs/{id}")
     public ResponseEntity<JobWithCompanyAndReviewDTO> findById(@PathVariable Long id){
         //return ResponseEntity.ok(jobService.getJobById(id));
         JobWithCompanyAndReviewDTO jobWithCompanyDTO = jobService.getJobById(id);
@@ -29,13 +29,13 @@ public class JobController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/api/admin/jobs")
+    @PostMapping("/jobs")
     public ResponseEntity<String> createJob(@RequestBody Job job){
         jobService.createJob(job);
         return ResponseEntity.ok("Job created");
     }
 
-    @DeleteMapping("/api/admin/jobs/{id}")
+    @DeleteMapping("/jobs/{id}")
     public ResponseEntity<String> deleteJob(@PathVariable Long id){
         try {
             String status=jobService.deleteJob(id);
@@ -45,7 +45,7 @@ public class JobController {
         }
     }
 
-    @PutMapping("/api/admin/jobs/{id}")
+    @PutMapping("/jobs/{id}")
     public Job updateJob(@PathVariable Long id, @RequestBody Job job){
         return jobService.updateJob(job,id);
     }

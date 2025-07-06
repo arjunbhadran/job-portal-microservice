@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(name = "company") //service name should be provided correctly
 public interface CompanyClient {
-    @GetMapping("api/public/companies/{id}")
+    @GetMapping("/companies/{id}")
     Company getCompany(@PathVariable("id") Long id);
 
 }
