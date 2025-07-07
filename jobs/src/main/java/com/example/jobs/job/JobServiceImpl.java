@@ -6,6 +6,11 @@ import com.example.jobs.job.dto.JobWithCompanyAndReviewDTO;
 import com.example.jobs.job.external.Company;
 import com.example.jobs.job.external.Review;
 import com.example.jobs.job.mapper.JobMapper;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -22,6 +27,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class JobServiceImpl implements JobService {
+
+    Logger logger = LoggerFactory.getLogger(JobServiceImpl.class);
+
     @Autowired
     JobRepository jobRepository;
 
@@ -34,11 +42,15 @@ public class JobServiceImpl implements JobService {
     @Autowired
     private ReviewClient reviewClient;
 
-//    @Autowired
-//    private CompanyService companyService;
+
+    int attempt= 0;
 
     @Override
+    //@CircuitBreaker(name="companyBreaker", fallbackMethod = "companyBreakerFallback")
+    //@Retry(name="companyBreaker",fallbackMethod = "companyBreakerFallback")
+    @RateLimiter(name="companyBreaker")
     public List<JobWithCompanyAndReviewDTO> getAlljobs(){
+        logger.info("Attempt: {}", ++attempt);
         List<Job> jobs = jobRepository.findAll();
         List<JobWithCompanyAndReviewDTO> jobWithCompanyDTOS = new ArrayList<>();
 //        for(Job job:jobs){
@@ -48,6 +60,12 @@ public class JobServiceImpl implements JobService {
 //        //return jobRepository.findAll();
 //        return jobWithCompanyDTOS;
         return jobs.stream().map(this::JobCompanyConcat).collect(Collectors.toList());
+    }
+
+    public List<String> companyBreakerFallback(Exception e){
+        List<String> list=new ArrayList<>();
+        list.add("Company or Review Microservice may be down!");
+        return list;
     }
 
     private JobWithCompanyAndReviewDTO JobCompanyConcat(Job job){
