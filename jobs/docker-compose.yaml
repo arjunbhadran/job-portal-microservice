@@ -13,6 +13,7 @@ services:
     networks:
       - postgres
     restart: unless-stopped
+
   pgadmin:
     container_name: pgadmin_container
     image: dpage/pgadmin4
@@ -28,8 +29,93 @@ services:
       - postgres
     restart: unless-stopped
 
+  config-server:
+    image: azkeban/config-server:latest
+    container_name: config-server
+    ports:
+      - 8080:8080
+    depends_on:
+      - servicereg
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+#in the above config-server-ms definition, depends_on states that config-server
+# should be started after servicereg since it depends on servicereg
+
+  servicereg:
+    image: azkeban/servicereg:latest
+    container_name: servicereg
+    ports:
+      - "8761:8761"
+    depends_on:
+      - postgres
+      - pgadmin
+    networks:
+      - microservice-network
+      - postgres
+
+  company:
+    image: azkeban/company:latest
+    container_name: company
+    ports:
+      - 8081:8081
+    depends_on:
+      - servicereg
+      - config-server
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  job:
+    image: azkeban/job:latest
+    container_name: job
+    ports:
+      - 8082:8082
+    depends_on:
+      - servicereg
+      - config-server
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+
+  review:
+    image: azkeban/review:latest
+    container_name: review
+    ports:
+      - 8083:8083
+    depends_on:
+      - servicereg
+      - config-server
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+  gateway:
+    image: azkeban/gateway
+    container_name: gateway
+    ports:
+      - 8084:8084
+    depends_on:
+      - servicereg
+    networks:
+      - microservice-network
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
 networks:
   postgres:
+    driver: bridge
+  microservice-network:
     driver: bridge
 
 volumes:
